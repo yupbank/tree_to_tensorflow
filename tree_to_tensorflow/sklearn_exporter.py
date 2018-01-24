@@ -63,13 +63,13 @@ def tree_dict_into_proto(tree_dict):
 
 def export_random_forest_classier(rf):
     assert isinstance(rf, RandomForestClassifier), 'only scikit-learn random forest classifier supported'
-    assert self.estimators_ is not None or len(self.estimators_) > 0, 'you have to fit it'
+    assert rf.estimators_ is not None or len(rf.estimators_) > 0, 'you have to fit it'
     tree_proto_strs = []
-    for tree in self.estimators_:
+    for tree in rf.estimators_:
         tree_proto_strs.append(tree_dict_into_proto(export_tree_into_dict(tree)).SerializeToString())
     #params = tensor_forest.ForestHParams(
     #  num_classes=rf.n_classes_,
     #  num_features=len(rf.feature_importances_),
     #  num_trees=len(rf.estimators_),
     #  max_nodes=2**(rf.max_depth+1))
-    return
+    return tree_proto_strs
