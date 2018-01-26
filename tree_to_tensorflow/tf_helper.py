@@ -17,8 +17,9 @@ class RandomForestGraphs(tensor_forest.RandomForestGraphs):
         print len(tree_weights), len(restorable)
         for n, tree in enumerate(restorable[:len(tree_weights)]):
             restore_ops.append(tree.restore(tree_weights_into_proto(tree_weights[n]), None))
+        self.restore_ops = restore_ops
         # WTF...... how do i get the session!
-        tf.get_default_session().run(restore_ops)
+        #tf.get_default_session().run(restore_ops)
 
     def fit(self, *args, **kwargs):
         raise Exception('Disabled...')

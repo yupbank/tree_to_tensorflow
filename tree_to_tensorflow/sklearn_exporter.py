@@ -30,5 +30,4 @@ def export_random_forest_classier(rf):
     tree_weights = []
     for tree in rf.estimators_:
         tree_weights.append(extract_weights(tree))
-    graph_builder = tf_helper.RFGraphBuilder(tree_weights)
-    return graph_builder 
+    return  tree_weights
