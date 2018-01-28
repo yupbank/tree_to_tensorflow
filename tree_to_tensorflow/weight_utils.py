@@ -32,3 +32,28 @@ def leaf_node(node_id, value):
                     },
                  'nodeId': node_id
             }
+
+
+
+def predict(x, tree_weights):
+    nodes = {}
+    for node in tree_weights['decisionTree']['nodes']:
+        node_id = node.get('nodeId', 0)
+        nodes[node_id] = node
+    start_node = 0
+    while True:
+        node = nodes[start_node]
+        if 'binaryNode' in node:
+            node = node['binaryNode']
+            feature = node['inequalityLeftChildTest']
+            feature_id = int(feature['featureId']['id'])
+            threshold = feature['threshold']['floatValue']
+            feature_value = x[feature_id]
+            if feature_value <= threshold:
+                start_node = node['leftChildId']
+            else:
+                start_node = node['rightChildId']
+        if 'leaf' in node:
+            node = node['leaf']
+            prediction = node['vector']['value']
+            return prediction

@@ -19,7 +19,7 @@ def extract_weights(estimator):
             nodes.append(wutil.binary_node(node_id, feature[node_id], threshold[node_id], children_left[node_id], children_right[node_id]))
             stack.extend([children_left[node_id], children_right[node_id]])
         else:
-            nodes.append(wutil.leaf_node(node_id, value[node_id].ravel()))
+            nodes.append(wutil.leaf_node(node_id, value.take([node_id], axis=0).ravel()))
     return wutil.base_model(nodes)
 
 
