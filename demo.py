@@ -10,6 +10,7 @@ from tensorflow.python.ops import resources
 import tensorflow as tf
 import numpy as np
 
+from tree_to_tensorflow.weight_utils import predict
 
 def export(tree_weights, params, model_dir, X, y):
     with tf.Graph().as_default() as g:
@@ -48,19 +49,26 @@ def main():
         num_classes=2,
         num_features=4,
         num_trees=10,
+        inference_tree_paths=True,
         max_nodes=100)
     tree_weights = export_random_forest_classier(clf)
-    export(tree_weights, params, model_dir, X, y)
-    import_model(model_dir, params, X, y)
-    # graph = RandomForestInferenceGraphs(params, tree_weights)
-    # with tf.Graph().as_default() as g:
-    #     dx = tf.placeholder(tf.float32, [None, 4])
-    #     graph = RandomForestInferenceGraphs(params, tree_weights)
-    #     logits, tree_paths, regression_variance = graph.inference_graph(dx)
-    #     init_vars = tf.group(tf.global_variables_initializer(),  resources.initialize_resources(resources.shared_resources()))
-    #     with tf.Session() as sess:
-    #         sess.run(init_vars)
-    #         print sess.run(logits, feed_dict={dx: X})
+    # export(tree_weights, params, model_dir, X, y)
+    # import_model(model_dir, params, X, y)
+
+    graph = RandomForestInferenceGraphs(params, tree_weights)
+    with tf.Graph().as_default() as g:
+        dx = tf.placeholder(tf.float32, [None, 4])
+        graph = RandomForestInferenceGraphs(params, tree_weights)
+        logits, tree_paths, regression_variance = graph.inference_graph(dx)
+        init_vars = tf.group(tf.global_variables_initializer(),  resources.initialize_resources(resources.shared_resources()))
+        processed_dense_features, processed_sparse_features, data_spec =  tensor_forest.data_ops.ParseDataTensorOrDict(dx)
+        with tf.Session() as sess:
+            weights_by_tree_number = lambda tree_number, instance_number: predict(X[instance_number], tree_weights[tree_number])
+            sklearn_by_tree_number = lambda tree_number, instance_number: clf.estimators_[tree_number].tree_.predict(X[instance_number:instance_number+1])
+            tf_by_tree_number = lambda tree_number, instance_number: sess.run(graph.trees[tree_number].inference_graph(processed_dense_features, data_spec, sparse_features=processed_sparse_features), feed_dict={dx:X[instance_number:instance_number+1]})
+            sess.run(init_vars)
+            import ipdb; ipdb.set_trace()
+            print sess.run(logits, feed_dict={dx: X})
 
 
 if __name__ == "__main__":
