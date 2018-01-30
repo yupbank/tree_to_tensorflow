@@ -11,6 +11,7 @@ import tensorflow as tf
 import numpy as np
 
 from tree_to_tensorflow.weight_utils import predict
+import fertile_stats_pb2
 
 def export(tree_weights, params, model_dir, X, y):
     with tf.Graph().as_default() as g:

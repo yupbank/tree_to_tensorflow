@@ -12,6 +12,7 @@ def build_estimator(model_dir):
   params = tensor_forest.ForestHParams(
       num_classes=2,
       num_features=4,
+      inference_tree_paths=True,
       num_trees=10,
       max_nodes=100)
   graph_builder_class = tensor_forest.RandomForestGraphs
@@ -21,12 +22,14 @@ def build_estimator(model_dir):
 
 est = build_estimator(model_dir='./tmp')
 
-
+X = np.asarray(X, dtype=np.float32)
 train_input_fn = numpy_io.numpy_input_fn(
-  x={'images': np.asarray(X, dtype=np.float32)},
+  x={'images': X},
   y=y,
   batch_size=X.shape[0],
   num_epochs=None,
   shuffle=True)
 
 est.fit(input_fn=train_input_fn, steps=None)
+predict = est.predict(train_input_fn)
+import ipdb; ipdb.set_trace()
