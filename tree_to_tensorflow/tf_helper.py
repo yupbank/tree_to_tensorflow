@@ -1,7 +1,8 @@
-from google.protobuf.json_format import ParseDict
+from google.protobuf.json_format import ParseDict, MessageToDict
 from tensorflow.contrib.decision_trees.proto import generic_tree_model_pb2 as _tree_proto
 from tensorflow.contrib.tensor_forest.proto import tensor_forest_params_pb2 as _params_proto
 from tensorflow.contrib.tensor_forest.python import tensor_forest
+import fertile_stats_pb2 as _stats_proto
 
 
 def tree_weight_into_proto(tree_weight):
@@ -10,6 +11,15 @@ def tree_weight_into_proto(tree_weight):
     else:
         return tree_weight
 
+def tree_proto_into_weights(tree_proto):
+    model = _tree_proto.Model()
+    model.ParseFromString(tree_proto)
+    return MessageToDict(model)
+
+def tree_path_proto_into_dict(tree_path_proto):
+    model = _stats_proto.TreePath()
+    model.ParseFromString(tree_path_proto)
+    return MessageToDict(model)
 
 class TreeInferenceVariables(tensor_forest.TreeTrainingVariables):
     def __init__(self, params, tree_weight, tree_num, training=False):

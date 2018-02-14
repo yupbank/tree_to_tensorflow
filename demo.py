@@ -3,15 +3,15 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
 
 from tree_to_tensorflow.sklearn_exporter import export_random_forest_classier
-from tree_to_tensorflow.tf_helper import RandomForestInferenceGraphs
+from tree_to_tensorflow.tf_helper import RandomForestInferenceGraphs, tree_proto_into_weights, tree_path_proto_into_dict, tree_weight_into_proto
 from tensorflow.contrib.tensor_forest.client import random_forest
 from tensorflow.contrib.tensor_forest.python import tensor_forest
+from tensorflow.python import pywrap_tensorflow
 from tensorflow.python.ops import resources
 import tensorflow as tf
 import numpy as np
 
 from tree_to_tensorflow.weight_utils import predict
-import fertile_stats_pb2
 
 def export(tree_weights, params, model_dir, X, y):
     with tf.Graph().as_default() as g:
@@ -38,6 +38,11 @@ def import_model(model_dir, params, X, y):
             pred = sess.run(logits, feed_dict={dx: X})
             print 'imported tensorflow', classification_report(y, np.where((pred[:, 0] - pred[:, 1]) > 0, 0, 1))
 
+def _tf_by_tree_number(sess, graph, processed_dense_features, data_spec, sparse_features, tree_number, dx, x):
+    pred = sess.run(graph.trees[tree_number].inference_graph(processed_dense_features, data_spec, sparse_features=sparse_features), feed_dict={dx:x})
+    tree_paths = map(tree_path_proto_into_dict, pred.tree_paths)
+    predictions = pred.predictions
+    return predictions, tree_paths
 
 def main():
     X, y = make_classification(n_samples=1000, n_features=4, n_informative=2, n_redundant=0, random_state=0, shuffle=False)
@@ -61,15 +66,25 @@ def main():
         dx = tf.placeholder(tf.float32, [None, 4])
         graph = RandomForestInferenceGraphs(params, tree_weights)
         logits, tree_paths, regression_variance = graph.inference_graph(dx)
+        restores = []
         init_vars = tf.group(tf.global_variables_initializer(),  resources.initialize_resources(resources.shared_resources()))
         processed_dense_features, processed_sparse_features, data_spec =  tensor_forest.data_ops.ParseDataTensorOrDict(dx)
+        saver = tf.train.Saver()
         with tf.Session() as sess:
-            weights_by_tree_number = lambda tree_number, instance_number: predict(X[instance_number], tree_weights[tree_number])
+            weights_by_tree_number = lambda tree_number, instance_number: predict(X[instance_number], tree_weights[tree_number], True)
             sklearn_by_tree_number = lambda tree_number, instance_number: clf.estimators_[tree_number].tree_.predict(X[instance_number:instance_number+1])
-            tf_by_tree_number = lambda tree_number, instance_number: sess.run(graph.trees[tree_number].inference_graph(processed_dense_features, data_spec, sparse_features=processed_sparse_features), feed_dict={dx:X[instance_number:instance_number+1]})
+            tf_by_tree_number = lambda tree_number, instance_number: _tf_by_tree_number(sess, graph, processed_dense_features, data_spec, processed_sparse_features, tree_number, dx, X[instance_number:instance_number+1])
             sess.run(init_vars)
+            for n, i in enumerate(tf.get_collection(tf.GraphKeys.SAVEABLE_OBJECTS)):
+                restores.append(i.restore([tree_weight_into_proto(tree_weights[n]),], None))
+            sess.run(restores)
+            #sess.run(graph.tress[0].variables.tree.graph.get_tensor_by_name('tree-1/TreeSerialize:0'))
+            #print sess.run(logits, feed_dict={dx: X})
             import ipdb; ipdb.set_trace()
-            print sess.run(logits, feed_dict={dx: X})
+            saver.save(sess, model_dir, global_step=1)
+            reader = pywrap_tensorflow.NewCheckpointReader('tmp/model.ckpt-1')
+            saved_weights_by_tree_number = lambda tree_number, instance_number: predict(X[instance_number], tree_proto_into_weights(reader.get_tensor('tree-%s:0'%tree_number)), True)
+            print reader.get_variable_to_shape_map()
 
 
 if __name__ == "__main__":
