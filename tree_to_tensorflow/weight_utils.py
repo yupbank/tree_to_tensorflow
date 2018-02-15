@@ -3,7 +3,7 @@ from itertools import repeat
 def fertile_stats(node_stats):
     return {'nodeToSlot': node_stats}
 
-def node_stats(depth, node_id):
+def node_stats(node_id, depth):
     return {'depth': depth, 'nodeId': node_id}
 
 def base_model(nodes):

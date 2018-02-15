@@ -29,11 +29,9 @@ class TreeInferenceVariables(tensor_forest.TreeTrainingVariables):
             params.params_proto = tensor_forest.build_params_proto(params)
 
         params.serialized_params_proto = params.params_proto.SerializeToString()
-        if training:
-            self.stats = tensor_forest.stats_ops.fertile_stats_variable(
-                params, '', self.get_tree_name('stats', tree_num))
-        else:
-            self.stats = None
+
+        self.stats = tensor_forest.stats_ops.fertile_stats_variable(
+            params, '', self.get_tree_name('stats', tree_num))
 
         self.tree = tensor_forest.model_ops.tree_variable(
             params, tree_weight_into_proto(tree_weight), self.stats, self.get_tree_name('tree', tree_num))
