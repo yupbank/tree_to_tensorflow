@@ -63,36 +63,22 @@ def main():
         num_trees=10,
         inference_tree_paths=True,
         max_nodes=100)
-    tree_weights = export_random_forest_classier(clf)
+    tree_weights, tree_stats = export_random_forest_classier(clf)
     # export(tree_weights, params, model_dir, X, y)
     # import_model(model_dir, params, X, y)
 
     with tf.Graph().as_default() as g:
         dx = tf.placeholder(tf.float32, [None, 4])
-        dy = tf.placeholder(tf.float32, [None])
-        graph = tensor_forest.RandomForestGraphs(params.fill())
-        features = {'features': dx}
-        labels = dy
-        training_graph = graph.training_graph(features, labels)
+        graph = RandomForestInferenceGraphs(params.fill(), tree_weights, tree_stats)
         logits, tree_paths, regression_variance = graph.inference_graph(dx)
-        init_vars = tf.group(tf.global_variables_initializer(),  resources.initialize_resources(resources.shared_resources()))
+        init_vars = tf.group(tf.global_variables_initializer(), resources.initialize_resources(resources.shared_resources()))
         processed_dense_features, processed_sparse_features, data_spec =  tensor_forest.data_ops.ParseDataTensorOrDict(dx)
         saver = tf.train.Saver()
         with tf.Session() as sess:
             sess.run(init_vars)
-            for i in xrange(3):
-                sess.run(training_graph, feed_dict={dx: X, dy:y})
             import ipdb; ipdb.set_trace()
             weights_by_tree_number = lambda tree_number, instance_number: predict(X[instance_number], tree_weights[tree_number], True)
             sklearn_by_tree_number = lambda tree_number, instance_number: clf.estimators_[tree_number].tree_.predict(X[instance_number:instance_number+1])
-            def change():
-                restores = []
-                for n, i in enumerate(tf.get_collection(tf.GraphKeys.SAVEABLE_OBJECTS)):
-                    n = n+1
-                    if n%2==0:
-                        restores.append(i.restore([tree_weight_into_proto(tree_weights[n/2-1]),], None))
-                return restores
-            #sess.run(restores)
             tf_by_tree_number = lambda tree_number, instance_number: _tf_by_tree_number(sess, graph, processed_dense_features, data_spec, processed_sparse_features, tree_number, dx, X[instance_number:instance_number+1])
             #sess.run(graph.tress[0].variables.tree.graph.get_tensor_by_name('tree-1/TreeSerialize:0'))
             #print sess.run(logits, feed_dict={dx: X})
