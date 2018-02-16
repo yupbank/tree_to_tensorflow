@@ -23,6 +23,11 @@ def tree_stats_into_proto(tree_stat):
     else:
         return tree_stat
 
+def tree_stat_proto_into_stats(tree_stat_proto):
+    stat = _stats_proto.FertileStats()
+    stat.ParseFromString(tree_stat_proto)
+    return MessageToDict(stat)
+
 def tree_path_proto_into_dict(tree_path_proto):
     model = _stats_proto.TreePath()
     model.ParseFromString(tree_path_proto)

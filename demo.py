@@ -44,7 +44,8 @@ def _import_model(tree_number, model_dir, params, x):
             #print 'imported tensorflow', classification_report(y, np.where((pred[:, 0] - pred[:, 1]) > 0, 0, 1))
 
 def _tf_by_tree_number(sess, graph, processed_dense_features, data_spec, sparse_features, tree_number, dx, x):
-    pred = sess.run(graph.trees[tree_number].inference_graph(processed_dense_features, data_spec, sparse_features=sparse_features), feed_dict={dx:x})
+    tree = graph.trees[tree_number]
+    pred = sess.run(tree.inference_graph(processed_dense_features, data_spec, sparse_features=sparse_features), feed_dict={dx:x})
     tree_paths = map(tree_path_proto_into_dict, pred.tree_paths)
     predictions = pred.predictions
     return predictions, tree_paths

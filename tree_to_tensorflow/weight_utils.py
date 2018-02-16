@@ -7,7 +7,7 @@ def node_stats(node_id, depth):
     return {'depth': depth, 'nodeId': node_id}
 
 def base_model(nodes):
-    return {'decisionTree': {'nodes': nodes}}
+    return {'decisionTree': {'nodes': sorted(nodes, key=lambda r: r.get('nodeId', 0))}}
 
 
 def binary_node(node_id, feature_id, threshold, left_child_id, right_child_id):
@@ -39,6 +39,26 @@ def leaf_node(node_id, value):
             }
 
 
+def stat_from_weight(tree_weight):
+    stats = []
+    nodes = {}
+    for node in tree_weight['decisionTree']['nodes']:
+        node_id = node.get('nodeId', 0)
+        nodes[node_id] = node
+    start_node = 0
+    depth = 0
+    stack = [(start_node, depth)]
+    while len(stack) > 0:
+        node_id, depth = stack.pop()
+        node = nodes[node_id]
+        if 'binaryNode' in node:
+            node = node['binaryNode']
+            depth += 1
+            stack.append((node['leftChildId'], depth))
+            stack.append((node['rightChildId'], depth))
+        else:
+            stats.append(node_stats(node_id, depth))
+    return fertile_stats(stats)
 
 def predict(x, tree_weights, path=False):
     nodes = {}
@@ -47,7 +67,7 @@ def predict(x, tree_weights, path=False):
         nodes[node_id] = node
     start_node = 0
     if path:
-        paths = [nodes[start_node]]
+        paths = []
     while True:
         node = nodes[start_node]
         if path:
