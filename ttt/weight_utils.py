@@ -61,10 +61,7 @@ def stat_from_weight(tree_weight):
     return fertile_stats(stats)
 
 def predict(x, tree_weights, path=False):
-    nodes = {}
-    for node in tree_weights['decisionTree']['nodes']:
-        node_id = node.get('nodeId', 0)
-        nodes[node_id] = node
+    nodes = tree_weights['decisionTree']['nodes']
     start_node = 0
     if path:
         paths = []
