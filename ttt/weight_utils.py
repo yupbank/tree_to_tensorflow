@@ -1,9 +1,9 @@
 from itertools import repeat
 
-def fertile_stats(node_stats):
+def fertile_stat(node_stats):
     return {'nodeToSlot': node_stats}
 
-def node_stats(node_id, depth):
+def node_stat(node_id, depth):
     return {'depth': depth, 'nodeId': node_id}
 
 def base_model(nodes):
@@ -57,14 +57,14 @@ def stat_from_weight(tree_weight):
             stack.append((node['leftChildId'], depth))
             stack.append((node['rightChildId'], depth))
         else:
-            stats.append(node_stats(node_id, depth))
-    return fertile_stats(stats)
+            stats.append(node_stat(node_id, depth))
+    return fertile_stat(stats)
 
 def predict(x, tree_weights, path=False):
     nodes = tree_weights['decisionTree']['nodes']
     start_node = 0
-    if path:
-        paths = []
+    paths = []
+    
     while True:
         node = nodes[start_node]
         if path:
