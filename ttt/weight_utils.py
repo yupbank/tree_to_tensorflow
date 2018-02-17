@@ -15,7 +15,7 @@ def binary_node(node_id, feature_id, threshold, left_child_id, right_child_id):
                 'binaryNode': {
                                 'inequalityLeftChildTest':
                                 {
-                                    'featureId': {'id': unicode(feature_id)},
+                                    'featureId': {'id': str(feature_id)},
                                     'threshold': {'floatValue': threshold}
                                 },
                                 'leftChildId': left_child_id,
