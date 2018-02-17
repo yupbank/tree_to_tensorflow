@@ -1,7 +1,7 @@
 
 from sklearn.ensemble import RandomForestClassifier
-import weight_utils as wutil
-import tf_helper
+
+import ttt.weight_utils as wutil
 
 
 def extract_weights(estimator):
