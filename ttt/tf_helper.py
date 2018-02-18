@@ -7,35 +7,35 @@ try:
     ### already merged in upstream https://github.com/tensorflow/tensorflow/pull/16566
     from tensorflow.contrib.tensor_forest.proto import fertile_stats_pb2 as _stats_proto
 except Exception:
-    import fertile_stats_pb2 as _stats_proto
+    import ttt.fertile_stats_pb2 as _stats_proto
 
 
-def weight_into_proto(weight):
+def weight_dict_to_proto(weight):
     if weight:
         return ParseDict(weight, _tree_proto.Model()).SerializeToString()
     else:
         return weight
 
-def weight_proto_into_weight(weight_proto):
+def weight_proto_to_dict(weight_proto):
     model = _tree_proto.Model()
     model.ParseFromString(weight_proto)
     return MessageToDict(model)
 
 
-def stat_into_proto(stat):
+def stat_dict_to_proto(stat):
     if stat:
         return ParseDict(stat, _stats_proto.FertileStats()).SerializeToString()
     else:
         return stat
 
 
-def stat_proto_into_stat(stat_proto):
+def stat_proto_to_dict(stat_proto):
     stat = _stats_proto.FertileStats()
     stat.ParseFromString(stat_proto)
     return MessageToDict(stat)
 
 
-def path_proto_into_dict(path_proto):
+def path_proto_to_dict(path_proto):
     model = _stats_proto.TreePath()
     model.ParseFromString(path_proto)
     return MessageToDict(model)

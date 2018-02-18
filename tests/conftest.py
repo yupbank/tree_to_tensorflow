@@ -30,3 +30,7 @@ def negative_x():
 @pytest.fixture
 def pred_negative():
     return [{'floatValue': 1.0}, {'floatValue': 0.0}]
+
+@pytest.fixture
+def clf():
+    return
