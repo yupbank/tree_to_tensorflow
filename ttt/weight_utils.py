@@ -1,6 +1,5 @@
 from itertools import repeat
 
-
 def node_stat(node_id, depth):
     return {'depth': depth, 'nodeId': node_id}
 
@@ -63,12 +62,9 @@ def stat_from_weight(tree_weight):
             stats.append(node_stat(node_id, depth))
     return fertile_stat(stats)
 
-
-def predict(x, tree_weights, path=False):
-    nodes = tree_weights['decisionTree']['nodes']
+def _predict(x, weight, path):
+    nodes = weight['decisionTree']['nodes']
     start_node = 0
-    paths = []
-    
     while True:
         node = nodes[start_node]
         if path:
@@ -86,7 +82,14 @@ def predict(x, tree_weights, path=False):
         if 'leaf' in node:
             node = node['leaf']
             prediction = node['vector']['value']
+            prediction = [i['floatValue'] for i in prediction]
             if not path:
                 return prediction
             else:
                 return prediction, paths
+
+def predict(X, tree_weights, path=False):
+    paths = []
+    nodes = tree_weights['decisionTree']['nodes']
+    for x in X:
+        yield _predict(x, tree_weights, path)
