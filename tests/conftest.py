@@ -12,6 +12,10 @@ def weight():
     return wutils.base_model([root, left, right])
 
 @pytest.fixture
+def stat():
+    return wutils.fertile_stat([wutils.node_stat(2, 1), wutils.node_stat(1, 1)])
+
+@pytest.fixture
 def postive_x():
     return [-1]
 

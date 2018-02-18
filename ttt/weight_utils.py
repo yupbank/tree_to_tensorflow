@@ -60,6 +60,7 @@ def stat_from_weight(tree_weight):
             stats.append(node_stat(node_id, depth))
     return fertile_stat(stats)
 
+
 def predict(x, tree_weights, path=False):
     nodes = tree_weights['decisionTree']['nodes']
     start_node = 0
