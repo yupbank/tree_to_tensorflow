@@ -1,13 +1,12 @@
 from itertools import repeat
 
-def fertile_stat(node_stats):
-    return {'nodeToSlot': node_stats}
 
 def node_stat(node_id, depth):
     return {'depth': depth, 'nodeId': node_id}
 
-def base_model(nodes):
-    return {'decisionTree': {'nodes': sorted(nodes, key=lambda r: r.get('nodeId', 0))}}
+
+def fertile_stat(node_stats):
+    return {'nodeToSlot': node_stats}
 
 
 def binary_node(node_id, feature_id, threshold, left_child_id, right_child_id):
@@ -37,6 +36,10 @@ def leaf_node(node_id, value):
                     },
                  'nodeId': node_id
             }
+
+
+def tree_model(nodes):
+    return {'decisionTree': {'nodes': sorted(nodes, key=lambda r: r.get('nodeId', 0))}}
 
 
 def stat_from_weight(tree_weight):

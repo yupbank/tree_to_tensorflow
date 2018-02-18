@@ -1,7 +1,7 @@
 import tensorflow as tf
-from tensorflow.contrib.tensor_forest as tensor_forest
+import tensorflow.contrib.tensor_forest as tensor_forest
 
-import ttt.sklearn_exporter as sk 
+import ttt.sklearn_helper as sk 
 from ttt.tf_helper import RandomForestGraphs, weight_proto_to_dict, path_proto_to_dict, weight_dict_to_proto
 
 
