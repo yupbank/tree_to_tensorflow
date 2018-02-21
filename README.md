@@ -15,6 +15,8 @@
 
 Convert a fitted `sklearn.random_forest_classifier` to `tensorflow.random_forest_estimator`
 
+All you need to do is pass your desired `model_dir`, `'./tmp'` in  this example and a fitted classifier.
+
 
 ```python
     
