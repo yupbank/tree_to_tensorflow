@@ -65,6 +65,7 @@ def stat_from_weight(tree_weight):
 def _predict(x, weight, path):
     nodes = weight['decisionTree']['nodes']
     start_node = 0
+    paths = []
     while True:
         node = nodes[start_node]
         if path:
@@ -89,7 +90,6 @@ def _predict(x, weight, path):
                 return prediction, paths
 
 def predict(X, tree_weights, path=False):
-    paths = []
     nodes = tree_weights['decisionTree']['nodes']
     for x in X:
         yield _predict(x, tree_weights, path)
