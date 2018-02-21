@@ -11,8 +11,7 @@ def main():
     clf = RandomForestClassifier()
     clf.fit(X, y)
     tf_estimator = export_sklearn_rf(clf, 'tmp')
-    pred = tf_estimator.predict(x=X)
-    print [i for i in pred]
-
+    pred = tf_estimator.evaluate(X, y)
+    print pred
 if __name__ == "__main__":
     main()
