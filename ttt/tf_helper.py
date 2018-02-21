@@ -1,3 +1,5 @@
+import logging
+
 from google.protobuf.json_format import ParseDict, MessageToDict
 from tensorflow.contrib.decision_trees.proto import generic_tree_model_pb2 as _tree_proto
 from tensorflow.contrib.tensor_forest.proto import tensor_forest_params_pb2 as _params_proto
@@ -53,11 +55,9 @@ class TreeVariables(tensor_forest.TreeTrainingVariables):
             params.params_proto = tensor_forest.build_params_proto(params)
 
         params.serialized_params_proto = params.params_proto.SerializeToString()
-        self.stats = None
-
-        if training:
-            self.stats = tensor_forest.stats_ops.fertile_stats_variable(
-                    params, tree_stat, self.get_tree_name('stats', tree_num))
+        
+        self.stats = tensor_forest.stats_ops.fertile_stats_variable(
+                params, tree_stat, self.get_tree_name('stats', tree_num))
 
         self.tree = tensor_forest.model_ops.tree_variable(
                 params, tree_config, self.stats, self.get_tree_name('tree', tree_num))
@@ -76,7 +76,7 @@ class ForestVariables(tensor_forest.ForestTrainingVariables):
 
         with tensor_forest.ops.device(device_assigner):
             for i in range(params.num_trees):
-                self.device_dummies.append(variable_scope.get_variable(
+                self.device_dummies.append(tensor_forest.variable_scope.get_variable(
                     name='device_dummy_%d' % i, shape=0))
         for i in range(params.num_trees):
             with tensor_forest.ops.device(self.device_dummies[i].device):
@@ -107,7 +107,7 @@ class RandomForestGraphs(tensor_forest.RandomForestGraphs):
         self.variables = variables or ForestVariables(
                 self.params, device_assigner=self.device_assigner, training=training,
                 tree_variables_class=tree_variables_class, tree_configs=tree_configs, tree_stats=tree_stats)
-        tree_graph_class = tree_graphs or RandomTreeGraphs
+        tree_graph_class = tree_graphs or tensor_forest.RandomTreeGraphs
         self.trees = [
                     tree_graph_class(self.variables[i], self.params, i)
                     for i in range(self.params.num_trees)
