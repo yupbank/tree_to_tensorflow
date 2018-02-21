@@ -11,3 +11,19 @@
 	* Convert a sciki-learn Tree/Forest into Tensorflow Tree/Forest Model.
 
 
+### Example
+
+Convert a fitted `sklearn.random_forest_classifier` to `tensorflow.random_forest_estimator`
+
+
+```python
+    
+from ttt import export_sklearn_rf
+
+    clf = sklearn.ensemble.RandomForestClassifier()
+    clf.fit(X, y)
+    tf_estimator = export_sklearn_rf(clf, 'tmp')
+    
+    pred = tf_estimator.evaluate(X, y)
+```
+
