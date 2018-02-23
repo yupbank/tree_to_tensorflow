@@ -1,5 +1,6 @@
 from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestClassifier
+import tensorflow as tf
 import numpy as np
 
 from ttt import export_sklearn_rf
@@ -11,6 +12,9 @@ def main():
     clf = RandomForestClassifier()
     clf.fit(X, y)
     tf_estimator = export_sklearn_rf(clf, 'tmp')
+    feature_spec = {'features': tf.FixedLenFeature([4], tf.float32)}
+    export_func = tf.contrib.learn.build_parsing_serving_input_fn(feature_spec)
+    tf_estimator.export_savedmodel('saved_model', export_func)
     pred = tf_estimator.evaluate(X, y)
     print pred
 if __name__ == "__main__":
