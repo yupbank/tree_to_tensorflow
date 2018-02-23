@@ -17,5 +17,6 @@ def main():
     tf_estimator.export_savedmodel('saved_model', export_func)
     pred = tf_estimator.evaluate(X, y)
     print pred
+    # base64.b64encode(tf.train.Example(features=tf.train.Features(feature={'features':tf.train.Feature(float_list=tf.train.FloatList(value=[1.0, 2.0, 2.0, 1.0]))})).SerializeToString())
 if __name__ == "__main__":
     main()
