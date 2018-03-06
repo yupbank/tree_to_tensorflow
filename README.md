@@ -29,3 +29,13 @@ from ttt import export_sklearn_rf
     pred = tf_estimator.evaluate(X, y)
 ```
 
+And if you want to server this model with tf/serving.
+
+All you need to do is pass your desired `saved_model_dir`
+
+```python
+
+feature_spec = {'features': tf.FixedLenFeature([4], tf.float32)}
+export_func = tf.contrib.learn.build_parsing_serving_input_fn(feature_spec)
+tf_estimator.export_savedmodel(saved_model_dir, export_func)
+```
