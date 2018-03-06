@@ -3,6 +3,7 @@
 ---
 
 [![CircleCI](https://circleci.com/gh/yupbank/tree_to_tensorflow/tree/master.svg?style=svg)](https://circleci.com/gh/yupbank/tree_to_tensorflow/tree/master)
+[![PyPI version](https://badge.fury.io/py/TFTree.svg)](https://badge.fury.io/py/TFTree)
 
 # The Goal is to have one unified tree runtime
 
