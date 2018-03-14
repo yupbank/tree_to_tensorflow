@@ -14,39 +14,42 @@ def forest_to_trees(forest):
             tree.append(line)
     return header, trees
 
+def create_node():
+    node_id = [0]
+    def _(**kwargs):
+        new_node = dict(id=node_id[0], **kwargs)
+        node_id[0] += 1
+        return new_node
+    return _
+
 
 def tree_to_weight(tree):
+    new_node = create_node()
     header = tree[0].strip()
     node_id = 0
-    stack = []
-    root = {}
+    root = new_node()
+    stack = [root]
     prev_line = None
     for line in tree[1:]:
+        prev_node = stack.pop()
         if line.startswith('If'):
-            node = dict(id = node_id, left_confition=line)
-            node_id += 1
+            node = new_node()
+            prev_node['condition'] = [line]
+            prev_node['left_child'] = node
+            stack.append(prev_node)
             stack.append(node)
         elif line.startswith('Else'):
-            prev_node = stack.pop()
-            prev_node.update(dict(right_condition=line))
-            stack.append(prev_node)
+            node = new_node()
+            prev_node['condition'].append(line)
+            prev_node['right_child'] = node
+            stack.append(node)
         elif line.startswith('Predict'):
-            node = dict(id=node_id, leaf = line)
-            node_id += 1
-            prev_node = stack.pop()
-            if prev_line.startswith('If'):
+            node = new_node(leaf=line)
+            if 'left_child' not in prev_node:
                 prev_node['left_child'] = node
-            elif prev_line.startswith('Else'):
-                prev_node['right_child'] = node
             else:
-                print 'error', '!!'
-            stack.append(prev_node)
-        else:
-            print 'error', '++'
-        prev_line = line
-    print stack
-    print len(stack)
-             
+                prev_node['right_child'] = node
+    return root 
 
 if __name__ == "__main__":
     forest = open('new_spark_tree.txt').readlines()
