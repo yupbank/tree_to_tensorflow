@@ -11,19 +11,20 @@ for r in parse_requirements('requirements.txt', session='hack'):
         requirements.append(str(r.req))
 
 setup(name='TFTree',
-      version='0.1.0',
+      version='0.1.1',
       packages=['ttt'],
-          install_requires=requirements,
-    extras_require=extras,
+      install_requires=requirements,
+      extras_require=extras,
       description='Tree to tensorflow',
       long_description="""
         ttt is a machine learning toolkit designed to efficiently perform
         tree model exporting into tensorflow estimators.
         """,
-        author='Peng Yu',
-        author_email='yupbank@gmail.com',
-        url='https://github.com/yupbank/tree_to_tensorflow',
-        download_url='https://github.com/yupbank/tree_to_tensorflow/archive/0.1.0.tar.gz',
-        keywords=['tensorflow', 'machine learning', 'sklearn', 'spark', 'model-serving'],
-        classifiers=[],
-)
+      author='Peng Yu',
+      author_email='yupbank@gmail.com',
+      url='https://github.com/yupbank/tree_to_tensorflow',
+      download_url='https://github.com/yupbank/tree_to_tensorflow/archive/0.1.0.tar.gz',
+      keywords=['tensorflow', 'machine learning',
+                'sklearn', 'spark', 'model-serving'],
+      classifiers=[],
+      )
