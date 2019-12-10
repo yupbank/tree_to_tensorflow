@@ -15,23 +15,27 @@ def tree_to_weight(tree):
     while len(stack) > 0:
         node_id = stack.pop()
         if (children_left[node_id] != children_right[node_id]):
-            nodes.append(wutil.binary_node(node_id, feature[node_id], threshold[node_id], children_left[node_id], children_right[node_id]))
+            nodes.append(wutil.binary_node(
+                node_id, feature[node_id], threshold[node_id], children_left[node_id], children_right[node_id]))
             stack.extend([children_left[node_id], children_right[node_id]])
         else:
-            nodes.append(wutil.leaf_node(node_id, value.take([node_id], axis=0).ravel()))
+            nodes.append(wutil.leaf_node(
+                node_id, value.take([node_id], axis=0).ravel()))
     return wutil.tree_model(nodes)
 
 
 def rf_to_hparams(rf):
-    return dict(num_classes=rf.n_outputs_,
+    return dict(num_classes=rf.n_outputs_ if isinstance(rf, RandomForestRegressor) else rf.n_classes_,
                 num_features=rf.n_features_,
                 num_trees=rf.n_estimators,
                 regression=isinstance(rf, RandomForestRegressor))
 
 
 def rf_to_weights_and_stats(rf):
-    assert isinstance(rf, (RandomForestClassifier, RandomForestRegressor)), 'only scikit-learn random forest classifier/regressor supported'
-    assert rf.estimators_ is not None or len(rf.estimators_) > 0, 'you have to fit it'
+    assert isinstance(rf, (RandomForestClassifier, RandomForestRegressor)
+                      ), 'only scikit-learn random forest classifier/regressor supported'
+    assert rf.estimators_ is not None or len(
+        rf.estimators_) > 0, 'you have to fit it'
     tree_weights = []
     tree_stats = []
     for tree in rf.estimators_:

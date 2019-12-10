@@ -9,7 +9,7 @@ requirements = [
 ]
 
 setup(name='TFTree',
-      version='0.1.3',
+      version='0.1.4',
       packages=['ttt'],
       install_requires=requirements,
       description='Tree to tensorflow',
