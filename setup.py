@@ -1,13 +1,12 @@
 from setuptools import setup
 
 
-def parse_requirements(filename):
-    """ load requirements from a pip requirements file """
-    lineiter = (line.strip() for line in open(filename))
-    return [line for line in lineiter if line and not line.startswith("#")]
-
-
-requirements = parse_requirements('requirements.txt')
+requirements = [
+    'tensorflow<=1.15.0',
+    'scipy>=0.17',
+    'numpy>=1.10',
+    'scikit-learn>=0.22'
+]
 
 setup(name='TFTree',
       version='0.1.1',
