@@ -1,5 +1,4 @@
-
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
 import ttt.weight_utils as wutil
 
@@ -24,14 +23,14 @@ def tree_to_weight(tree):
 
 
 def rf_to_hparams(rf):
-    return dict(num_classes=rf.n_classes_,
+    return dict(num_classes=rf.n_outputs_,
                 num_features=rf.n_features_,
-                num_trees=rf.n_estimators)
-
+                num_trees=rf.n_estimators,
+                regression=isinstance(rf, RandomForestRegressor))
 
 
 def rf_to_weights_and_stats(rf):
-    assert isinstance(rf, RandomForestClassifier), 'only scikit-learn random forest classifier supported'
+    assert isinstance(rf, (RandomForestClassifier, RandomForestRegressor)), 'only scikit-learn random forest classifier/regressor supported'
     assert rf.estimators_ is not None or len(rf.estimators_) > 0, 'you have to fit it'
     tree_weights = []
     tree_stats = []
@@ -40,4 +39,4 @@ def rf_to_weights_and_stats(rf):
         tree_stat = wutil.stat_from_weight(tree_weight)
         tree_weights.append(tree_weight)
         tree_stats.append(tree_stat)
-    return  tree_weights, tree_stats
+    return tree_weights, tree_stats

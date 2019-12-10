@@ -3,7 +3,7 @@ from functools import partial
 import tensorflow as tf
 import tensorflow.contrib.tensor_forest as tensor_forest
 
-import ttt.sklearn_helper as sk 
+import ttt.sklearn_helper as sk
 from ttt.tf_helper import RandomForestGraphs, weight_proto_to_dict, path_proto_to_dict, weight_dict_to_proto, stat_dict_to_proto
 
 
@@ -30,7 +30,7 @@ def export_tf_graph(tree_weights, tree_stats, params, model_dir, input_func=None
         with tf.Session() as sess:
             sess.run(init_vars)
             saver = tf.train.Saver()
-            saver.save(sess, model_dir+'/model.ckpt', global_step=step)
+            saver.save(sess, model_dir + '/model.ckpt', global_step=step)
 
 
 def export_tf_estimator(tree_weights, tree_stats, params, model_dir):
