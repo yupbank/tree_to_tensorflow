@@ -5,11 +5,11 @@ requirements = [
     'tensorflow<=1.15.0',
     'scipy>=0.17',
     'numpy>=1.10',
-    'scikit-learn>=0.22'
+    'scikit-learn>=0.20.2'
 ]
 
 setup(name='TFTree',
-      version='0.1.2',
+      version='0.1.3',
       packages=['ttt'],
       install_requires=requirements,
       description='Tree to tensorflow',

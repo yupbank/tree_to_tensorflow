@@ -2,4 +2,4 @@ tensorflow==1.15.0
 pytest>=5.3.1
 scipy>=0.17
 numpy>=1.10
-scikit-learn>=0.22
+scikit-learn>=0.20.2
