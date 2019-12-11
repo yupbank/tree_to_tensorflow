@@ -2,20 +2,20 @@ import logging
 import tensorflow as tf
 import numpy as np
 import os
-from tf_tree_inference import decision_tree_inference_in_tf
+from ttt.tf_tree_inference import decision_tree_inference_in_tf
 
 
-def export(clf, input_placeholder, output_dir, model_version=1):
+def export_deicison_tree(clf, inputs, output_dir, model_version=1):
+    assert(len(inputs.values()) == 1, "only one input is supported")
+    input_name, input_placeholder = next(iter(inputs.items()))
     with input_placeholder.graph.as_default():
         output = decision_tree_inference_in_tf(input_placeholder, clf)
-
         with tf.Session() as sess:
-            # Restore variables from training checkpoints.
-
             # Export inference model.
             output_path = os.path.join(
                 tf.compat.as_bytes(output_dir),
                 tf.compat.as_bytes(str(model_version)))
+
             logging.info('Exporting trained model to %s' % output_path)
             builder = tf.saved_model.builder.SavedModelBuilder(output_path)
 
@@ -24,11 +24,10 @@ def export(clf, input_placeholder, output_dir, model_version=1):
                 input_placeholder)
             output_tensor_info = tf.saved_model.utils.build_tensor_info(
                 output)
-
             signature = (
                 tf.saved_model.signature_def_utils.build_signature_def(
                     inputs={
-                        'features': inputs_tensor_info,
+                        input_name: inputs_tensor_info,
                     },
                     outputs={'predict': output_tensor_info},
                     method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME))
