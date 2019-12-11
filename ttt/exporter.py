@@ -25,7 +25,8 @@ def export_tf_graph(tree_weights, tree_stats, params, model_dir, input_func=None
         graph = RandomForestGraphs(params, tree_weights, tree_stats)
         logits, tree_paths, regression_variance = graph.inference_graph(dx)
         step = tf.train.get_or_create_global_step()
-        init_vars = tf.group(tf.global_variables_initializer(), resources.initialize_resources(resources.shared_resources()))
+        init_vars = tf.group(tf.global_variables_initializer(
+        ), resources.initialize_resources(resources.shared_resources()))
 
         with tf.Session() as sess:
             sess.run(init_vars)
@@ -34,5 +35,6 @@ def export_tf_graph(tree_weights, tree_stats, params, model_dir, input_func=None
 
 
 def export_tf_estimator(tree_weights, tree_stats, params, model_dir):
-    graph_builder_class = partial(RandomForestGraphs, tree_configs=tree_weights, tree_stats=tree_stats)
-    return tensor_forest.random_forest.TensorForestEstimator(params, model_dir=model_dir, graph_builder_class=graph_builder_class)
+    graph_builder_class = partial(
+        RandomForestGraphs, tree_configs=tree_weights, tree_stats=tree_stats)
+    return tensor_forest.random_forest.CoreTensorForestEstimator(params, model_dir=model_dir, graph_builder_class=graph_builder_class)
