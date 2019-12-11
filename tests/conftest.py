@@ -1,9 +1,8 @@
 from sklearn.datasets import make_classification
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 import numpy as np
 import pytest
-import tempfile
 
 import ttt.weight_utils as wutils
 
@@ -57,8 +56,9 @@ def clf(dataset):
     return clf
 
 
-@pytest.fixture
-def dlf(dataset):
-    clf = DecisionTreeClassifier()
+@pytest.fixture(params=[DecisionTreeClassifier(), RandomForestClassifier(n_estimators=4), DecisionTreeRegressor(), RandomForestRegressor(n_estimators=4)],
+                ids=['DecisionTreeClassifier', 'RandomForestClassifier', 'DecisionTreeRegressor', 'RandomForestRegressor'])
+def dlf(request, dataset):
+    clf = request.param
     clf.fit(*dataset)
-    return clf
+    yield clf

@@ -2,14 +2,29 @@ import logging
 import tensorflow as tf
 import numpy as np
 import os
-from ttt.tf_tree_inference import decision_tree_inference_in_tf
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from ttt.tf_tree_inference import TreeRegressionInference, TreeClassificationInference, ForestClassifierInference, ForestRegressorInference
+
+
+def model_fn(clf, input_):
+    if isinstance(clf, DecisionTreeRegressor):
+        return TreeRegressionInference(clf).predict(input_)
+    elif isinstance(clf, DecisionTreeClassifier):
+        return TreeClassificationInference(clf).predict(input_)
+    elif isinstance(clf, RandomForestClassifier):
+        return ForestClassifierInference(clf).predict(input_)
+    elif isinstance(clf, RandomForestRegressor):
+        return ForestRegressorInference(clf).predict(input_)
+    else:
+        raise Exception("Not recognized model")
 
 
 def export_deicison_tree(clf, inputs, output_dir, model_version=1):
-    assert(len(inputs.values()) == 1, "only one input is supported")
+    assert len(inputs.values()) == 1, "only one input is supported"
     input_name, input_placeholder = next(iter(inputs.items()))
     with input_placeholder.graph.as_default():
-        output = decision_tree_inference_in_tf(input_placeholder, clf)
+        output = model_fn(clf, input_placeholder)
         with tf.Session() as sess:
             # Export inference model.
             output_path = os.path.join(
