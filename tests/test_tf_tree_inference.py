@@ -1,47 +1,65 @@
 import numpy as np
 import tensorflow as tf
+import pytest
 
 from sklearn.datasets import make_regression, make_classification
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
-from ttt.tf_tree_inference import decision_tree_inference_in_tf as inference_tf
+from ttt.tf_tree_inference import TreeClassificationInference, TreeRegressionInference, ForestClassifierInference, ForestRegressorInference
 
 
-def test_classification():
+@pytest.fixture(scope="function", params=[(DecisionTreeClassifier(), TreeClassificationInference), (RandomForestClassifier(n_estimators=4), ForestClassifierInference)], ids=['DecisionTreeClassifier', 'RandomForestClassifier'])
+def classifiers(request):
+    param = request.param
+    yield param
+
+
+@pytest.fixture(scope="function", params=[(DecisionTreeRegressor(), TreeRegressionInference), (RandomForestRegressor(n_estimators=4), ForestRegressorInference)], ids=['DecisionTreeRegressor', 'RandomForestRegressor'])
+def regressors(request):
+    param = request.param
+    yield param
+
+
+def test_classification(classifiers):
+    clf, inferencer = classifiers
     x, y = make_classification()
-    clf = DecisionTreeClassifier()
     d = tf.placeholder(tf.float64, [None, x.shape[1]])
     clf.fit(x, y)
-    res = inference_tf(d, clf)
+    tf_infer = inferencer(clf)
+    predict_res = tf_infer.predict(d)
+    predict_prob_res = tf_infer.predict_prob(d)
     with tf.Session():
-        np.testing.assert_allclose(clf.predict(x), res.eval({d: x}))
+        np.testing.assert_allclose(clf.predict(x), predict_res.eval({d: x}))
+        np.testing.assert_allclose(clf.predict_proba(
+            x), predict_prob_res.eval({d: x}))
 
-
-def test_classification_multi_output():
-    x, y = make_classification()
-    clf = DecisionTreeClassifier()
-    d = tf.placeholder(tf.float64, [None, x.shape[1]])
     clf.fit(x, np.vstack([y, y]).T)
-    res = inference_tf(d, clf)
+    tf_infer = inferencer(clf)
+    predict_res = tf_infer.predict(d)
+    predict_prob_res = tf_infer.predict_prob(d)
+
+    def reshape_proba(x): return np.concatenate(
+        [r[:, np.newaxis, :] for r in clf.predict_proba(x)], axis=1)
+
     with tf.Session():
-        np.testing.assert_allclose(clf.predict(x), res.eval({d: x}))
+        np.testing.assert_allclose(clf.predict(x), predict_res.eval({d: x}))
+        np.testing.assert_allclose(reshape_proba(
+            x), predict_prob_res.eval({d: x}))
 
 
-def test_regression():
+def test_regression(regressors):
     x, y = make_regression()
-    clf = DecisionTreeRegressor()
+    clf, inferencer = regressors
     d = tf.placeholder(tf.float64, [None, x.shape[1]])
     clf.fit(x, y)
-    res = inference_tf(d, clf)
+    tf_infer = inferencer(clf)
+    predict_res = tf_infer.predict(d)
     with tf.Session():
-        np.testing.assert_allclose(clf.predict(x), res.eval({d: x}))
+        np.testing.assert_allclose(clf.predict(x), predict_res.eval({d: x}))
 
-
-def test_regression_multi_output():
-    x, y = make_regression()
-    clf = DecisionTreeRegressor()
-    d = tf.placeholder(tf.float64, [None, x.shape[1]])
     clf.fit(x, np.vstack([y, y]).T)
-    res = inference_tf(d, clf)
+    tf_infer = inferencer(clf)
+    predict_res = tf_infer.predict(d)
     with tf.Session():
-        np.testing.assert_allclose(clf.predict(x), res.eval({d: x}))
+        np.testing.assert_allclose(clf.predict(x), predict_res.eval({d: x}))
