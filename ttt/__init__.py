@@ -1,1 +1,1 @@
-from ttt.exporter import export_sklearn_rf
+from ttt.saved_model_export import export_decision_tree

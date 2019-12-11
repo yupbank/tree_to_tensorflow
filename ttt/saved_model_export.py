@@ -1,6 +1,5 @@
 import logging
 import tensorflow as tf
-import numpy as np
 import os
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
@@ -20,7 +19,7 @@ def model_fn(clf, input_):
         raise Exception("Not recognized model")
 
 
-def export_deicison_tree(clf, inputs, output_dir, model_version=1):
+def export_decision_tree(clf, inputs, output_dir, model_version=1):
     assert len(inputs.values()) == 1, "only one input is supported"
     input_name, input_placeholder = next(iter(inputs.items()))
     with input_placeholder.graph.as_default():

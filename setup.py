@@ -2,14 +2,14 @@ from setuptools import setup
 
 
 requirements = [
-    'tensorflow<=1.15.0',
+    'tensorflow',
     'scipy>=0.17',
     'numpy>=1.10',
     'scikit-learn>=0.20.2'
 ]
 
 setup(name='TFTree',
-      version='0.1.5',
+      version='0.1.6',
       packages=['ttt'],
       install_requires=requirements,
       description='Tree to tensorflow',
