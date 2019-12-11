@@ -7,9 +7,9 @@
 
 # The Goal is to have one unified tree runtime
 
-	* Convert a spark Tree/Forest into Tensorflow Tree/Forest Model.
+	* Convert a spark Tree/Forest into Tensorflow Graph.
 
-	* Convert a sciki-learn Tree/Forest into Tensorflow Tree/Forest Model.
+	* Convert a sciki-learn Tree/Forest into Tensorflow Graph.
 
 
 ### Example
@@ -17,6 +17,8 @@
 Convert fitted 
 	- `sklearn.DecisionTreeClassifier` 
 	- `sklearn.DecisionTreeRegressor`
+	- `sklearn.RandomForestRegressor`
+	- `sklearn.RandomForestClassifier`
 
 to `tensorflow.saved_model`
 
@@ -25,22 +27,13 @@ All you need to do is pass your desired `model_dir`, `'./tmp'` in  this example 
 
 ```python
     
-from ttt import export_sklearn_rf
+    from ttt import export_decision_tree
 
     clf = sklearn.ensemble.RandomForestClassifier()
     clf.fit(X, y)
-    tf_estimator = export_sklearn_rf(clf, 'tmp')
+    features = {'features': tf.placeholder(tf.float64, [None, X.shape[1]])}
+    export_decision_tree(clf, features, 'tmp')
     
-    pred = tf_estimator.evaluate(X, y)
 ```
 
-And if you want to server this model with tf/serving.
-
-All you need to do is pass your desired `saved_model_dir`
-
-```python
-
-feature_spec = {'features': tf.FixedLenFeature([4], tf.float32)}
-export_func = tf.contrib.learn.build_parsing_serving_input_fn(feature_spec)
-tf_estimator.export_savedmodel(saved_model_dir, export_func)
-```
+And then you can server this model with tf/serving using 'tmp'
