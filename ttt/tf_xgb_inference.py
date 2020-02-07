@@ -3,7 +3,7 @@ import tensorflow as tf
 from ttt.tf_utils import tree_to_leaf, leaf_to_value
 
 
-def from_df_to_tree(df):
+def df_to_tree(df):
     meta_df = df.copy()
     children_left = np.array([-1 if not isinstance(r, str) else int(
         r.split('-')[1]) for r in meta_df['Yes'].values])
@@ -44,7 +44,7 @@ class TreeRegressionInference(InferenceBase):
 
     def predict(self, input_):
         predicted = self._predict(input_)
-        return tf.reduce_sum(predicted, axis=0)
+        return self.clf.base_score+tf.reduce_sum(predicted, axis=0)
 
 
 class TreeClassificationInference(InferenceBase):

@@ -8,7 +8,7 @@ jobs:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.6.4
+      - image: circleci/python:3.6.5
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -30,6 +30,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
+            sudo apt-get install -y libgomp1
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
@@ -48,7 +49,11 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            py.test tests
+            mkdir test-reports
+            py.test tests --junitxml=test-reports/junit.xml
+
+      - store_test_results:
+          path: test-reports
 
       - store_artifacts:
           path: test-reports
