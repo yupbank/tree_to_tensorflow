@@ -6,7 +6,7 @@ from sklearn.datasets import make_regression, make_classification
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
-from ttt.tf_tree_inference import TreeClassificationInference, TreeRegressionInference, ForestClassifierInference, ForestRegressorInference
+from ttt.tf_sk_inference import TreeClassificationInference, TreeRegressionInference, ForestClassifierInference, ForestRegressorInference
 
 
 @pytest.fixture(scope="function", params=[(DecisionTreeClassifier(), TreeClassificationInference), (RandomForestClassifier(n_estimators=4), ForestClassifierInference)], ids=['DecisionTreeClassifier', 'RandomForestClassifier'])
