@@ -47,14 +47,16 @@ class TreeRegressionInference(InferenceBase):
         return self.clf.base_score+tf.reduce_sum(predicted, axis=0)
 
 
-class TreeClassificationInference(InferenceBase):
+class TreeClassificationInference(TreeRegressionInference):
 
     def predict_proba(self, input_):
         predicted = self._predict(input_)
         if self.clf.n_classes_ > 2:
             predicted = tf.reshape(predicted, (-1, self.clf.n_classes_))
             predicted = tf.softmax(predicted, axis=1)
-        return tf.reduce_mean(predicted, axis=0)
+        positive_pred = tf.sigmoid(tf.reduce_sum(predicted, axis=0))[
+            :, tf.newaxis]
+        return tf.concat([1-positive_pred, positive_pred], axis=1)
 
     def predict(self, input_):
         prob = self.predict_proba(input_)
