@@ -6,24 +6,28 @@ from sklearn.datasets import make_regression, make_classification
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
-from ttt.tf_tree_inference import TreeClassificationInference, TreeRegressionInference, ForestClassifierInference, ForestRegressorInference
+from ttt.sk_inference import TreeClassificationInference, TreeRegressionInference, ForestClassifierInference, ForestRegressorInference
 
 
-@pytest.fixture(scope="function", params=[(DecisionTreeClassifier(), TreeClassificationInference), (RandomForestClassifier(n_estimators=4), ForestClassifierInference)], ids=['DecisionTreeClassifier', 'RandomForestClassifier'])
+@pytest.fixture(scope="function", params=[(DecisionTreeClassifier(), TreeClassificationInference),
+                                          (RandomForestClassifier(n_estimators=4), ForestClassifierInference)],
+                ids=['DecisionTreeClassifier', 'RandomForestClassifier'])
 def classifiers(request):
     param = request.param
     yield param
 
 
-@pytest.fixture(scope="function", params=[(DecisionTreeRegressor(), TreeRegressionInference), (RandomForestRegressor(n_estimators=4), ForestRegressorInference)], ids=['DecisionTreeRegressor', 'RandomForestRegressor'])
+@pytest.fixture(scope="function", params=[(DecisionTreeRegressor(), TreeRegressionInference),
+                                          (RandomForestRegressor(n_estimators=4), ForestRegressorInference)],
+                ids=['DecisionTreeRegressor', 'RandomForestRegressor'])
 def regressors(request):
     param = request.param
     yield param
 
 
-def test_classification(classifiers):
+def test_classification(classifiers, binary_classification_dataset):
     clf, inferencer = classifiers
-    x, y = make_classification()
+    x, y = binary_classification_dataset
     d = tf.placeholder(tf.float64, [None, x.shape[1]])
     clf.fit(x, y)
     tf_infer = inferencer(clf)
