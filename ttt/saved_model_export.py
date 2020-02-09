@@ -25,7 +25,7 @@ def model_fn(clf, input_, predict_prob=False):
     elif isinstance(clf, xgb.XGBClassifier):
         cls = ClassificationInference
     elif isinstance(clf, xgb.XGBRegressor):
-        clf = RegressionInference
+        cls = RegressionInference
     else:
         raise Exception("Not recognized model")
 

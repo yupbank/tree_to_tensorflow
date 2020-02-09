@@ -1,6 +1,7 @@
 from sklearn.datasets import make_classification, make_regression
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+import xgboost as xgb
 import numpy as np
 import pytest
 
@@ -20,10 +21,12 @@ def single_regression_dataset():
     X = np.asarray(X, dtype=np.float32)
     return X, y
 
+
 @pytest.fixture
 def multi_regression_dataset(single_regression_dataset):
     X, y = single_regression_dataset
     return X, np.vstack([y, y]).T
+
 
 @pytest.fixture
 def multiclass_classification_dataset():
@@ -32,10 +35,12 @@ def multiclass_classification_dataset():
     #X = np.asarray(X, dtype=np.float32)
     return X, y
 
+
 @pytest.fixture
 def multioutput_binary_class_dataset(binary_classification_dataset):
     X, y = binary_classification_dataset
     return X, np.vstack([y, y]).T
+
 
 @pytest.fixture
 def multioutput_multi_class_dataset(multiclass_classification_dataset):
@@ -44,9 +49,11 @@ def multioutput_multi_class_dataset(multiclass_classification_dataset):
 
 
 @pytest.fixture(params=[DecisionTreeClassifier(), RandomForestClassifier(n_estimators=4), DecisionTreeRegressor(),
-                        RandomForestRegressor(n_estimators=4)],
+                        RandomForestRegressor(n_estimators=4),
+                        xgb.XGBClassifier(n_estimators=4),
+                        xgb.XGBRegressor(n_estimators=4), ],
                 ids=['DecisionTreeClassifier', 'RandomForestClassifier', 'DecisionTreeRegressor',
-                     'RandomForestRegressor'])
+                     'RandomForestRegressor', 'XGBClassifier', 'XGBRegressor'])
 def dlf(request, binary_classification_dataset):
     clf = request.param
     clf.fit(*binary_classification_dataset)
