@@ -56,9 +56,7 @@ class TreeClassificationInference(TreeRegressionInference):
                 :, tf.newaxis]
             return tf.concat([1-positive_pred, positive_pred], axis=1)
         else:
-            predicted = tf.reduce_sum(tf.stack(
-                tf.split(predicted, self.clf.n_classes_, axis=0), axis=2), axis=0)
-            return tf.nn.softmax(predicted, axis=1)
+            return tf.transpose(tf.nn.softmax(tf.reduce_sum(tf.split(predicted, self.clf.n_estimators, axis=0), axis=0), axis=0))
 
     def predict(self, input_):
         prob = self.predict_proba(input_)
