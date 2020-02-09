@@ -3,7 +3,7 @@ import tensorflow as tf
 import os
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from ttt.tf_sk_inference import TreeRegressionInference, TreeClassificationInference, ForestClassifierInference, ForestRegressorInference
+from ttt.sk_inference import TreeRegressionInference, TreeClassificationInference, ForestClassifierInference, ForestRegressorInference
 
 
 def model_fn(clf, input_, predict_prob=False):
