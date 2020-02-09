@@ -7,7 +7,7 @@
 
 # The Goal is to have one unified tree runtime
 
-	* Convert a spark Tree/Forest into Tensorflow Graph.
+	* Convert a xgboost Tree/Forest into Tensorflow Graph.
 
 	* Convert a sciki-learn Tree/Forest into Tensorflow Graph.
 
@@ -15,10 +15,13 @@
 ### Example
 
 Convert fitted 
-	- `sklearn.DecisionTreeClassifier` 
-	- `sklearn.DecisionTreeRegressor`
-	- `sklearn.RandomForestRegressor`
-	- `sklearn.RandomForestClassifier`
+
+- `sklearn.DecisionTreeClassifier` 
+- `sklearn.DecisionTreeRegressor`
+- `sklearn.RandomForestRegressor`
+- `sklearn.RandomForestClassifier`
+- `xgboost.XGBClassifier`
+- `xgboost.XGBRegressor`
 
 to `tensorflow.saved_model`
 
@@ -32,8 +35,11 @@ All you need to do is pass your desired `model_dir`, `'./tmp'` in  this example 
     clf = sklearn.ensemble.RandomForestClassifier()
     clf.fit(X, y)
     features = {'features': tf.placeholder(tf.float64, [None, X.shape[1]])}
-    export_decision_tree(clf, features, 'tmp')
+    export_decision_tree(clf, features, 'sklearn_saved_model')
+
+    xgb_model = xgboost.XGBClassifier().fit(X, y)
+    export_decision_tree(xgb_model, features, 'xgb_saved_model')
     
 ```
 
-And then you can server this model with tf/serving using 'tmp'
+And then you can server this model with tf/serving using 'saved_model'
