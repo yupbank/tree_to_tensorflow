@@ -4,6 +4,13 @@ import os
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from ttt.sk_inference import TreeRegressionInference, TreeClassificationInference, ForestClassifierInference, ForestRegressorInference
+from ttt.xgb_inference import ClassificationInference, RegressionInference
+try:
+    import xgboost as xgb
+except Exception as e:
+    print("no xgboost installed")
+    from collections import namedtuple
+    xgb = namedtuple('DummyXGB', 'XGBClassifier XGBRegressor')(None, None)
 
 
 def model_fn(clf, input_, predict_prob=False):
@@ -15,6 +22,10 @@ def model_fn(clf, input_, predict_prob=False):
         cls = ForestClassifierInference
     elif isinstance(clf, RandomForestRegressor):
         cls = ForestRegressorInference
+    elif isinstance(clf, xgb.XGBClassifier):
+        cls = ClassificationInference
+    elif isinstance(clf, xgb.XGBRegressor):
+        cls = RegressionInference
     else:
         raise Exception("Not recognized model")
 

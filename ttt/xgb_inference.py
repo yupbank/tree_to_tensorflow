@@ -37,7 +37,7 @@ class InferenceBase(object):
         self.clf = clf
 
 
-class TreeRegressionInference(InferenceBase):
+class RegressionInference(InferenceBase):
     def _predict(self, input_):
         return [tree_df_to_value(input_, tree_df)
                 for tree_df in model_to_tree_dfs(self.clf)]
@@ -47,7 +47,7 @@ class TreeRegressionInference(InferenceBase):
         return self.clf.base_score+tf.reduce_sum(predicted, axis=0)
 
 
-class TreeClassificationInference(TreeRegressionInference):
+class ClassificationInference(RegressionInference):
 
     def predict_proba(self, input_):
         predicted = self._predict(input_)
