@@ -50,7 +50,7 @@ jobs:
           command: |
             . venv/bin/activate
             mkdir test-reports
-            py.test tests --junitxml=test-reports/junit.xml --cov=./
+            py.test tests --junitxml=test-reports/junit.xml --cov=./ttt
             codecov
 
       - store_test_results:
