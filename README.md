@@ -5,6 +5,7 @@
 [![CircleCI](https://circleci.com/gh/yupbank/tree_to_tensorflow/tree/master.svg?style=svg)](https://circleci.com/gh/yupbank/tree_to_tensorflow/tree/master)
 [![PyPI version](https://badge.fury.io/py/TFTree.svg)](https://badge.fury.io/py/TFTree)
 [![codecov](https://codecov.io/gh/yupbank/tree_to_tensorflow/branch/master/graph/badge.svg)](https://codecov.io/gh/yupbank/tree_to_tensorflow)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # The Goal is to have one unified tree runtime
 
