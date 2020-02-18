@@ -11,8 +11,9 @@ def test_regression_inference():
     model = xgb.XGBRegressor(random_state=10).fit(x, y)
     a = RegressionInference(model)
     with tf.Session() as sess:
-      np.testing.assert_array_almost_equal(
-          sess.run(a.predict(x)), model.predict(x), decimal=3)
+        np.testing.assert_array_almost_equal(
+            sess.run(a.predict(x)), model.predict(x), decimal=3
+        )
 
 
 def test_classification_inference_2_class(binary_classification_dataset):
@@ -20,10 +21,10 @@ def test_classification_inference_2_class(binary_classification_dataset):
     model = xgb.XGBClassifier(random_state=10).fit(x, y)
     b = ClassificationInference(model)
     with tf.Session() as sess:
-      np.testing.assert_array_almost_equal(
-          sess.run(b.predict_proba(x)), model.predict_proba(x), decimal=3)
-      np.testing.assert_array_almost_equal(
-          sess.run(b.predict(x)), model.predict(x))
+        np.testing.assert_array_almost_equal(
+            sess.run(b.predict_proba(x)), model.predict_proba(x), decimal=3
+        )
+        np.testing.assert_array_almost_equal(sess.run(b.predict(x)), model.predict(x))
 
 
 def test_classification_inference_3_class(multiclass_classification_dataset):
@@ -31,7 +32,7 @@ def test_classification_inference_3_class(multiclass_classification_dataset):
     model = xgb.XGBClassifier(random_state=10).fit(x, y)
     b = ClassificationInference(model)
     with tf.Session() as sess:
-      np.testing.assert_array_almost_equal(
-          sess.run(b.predict_proba(x)), model.predict_proba(x), decimal=3)
-      np.testing.assert_array_almost_equal(
-          sess.run(b.predict(x)), model.predict(x))
+        np.testing.assert_array_almost_equal(
+            sess.run(b.predict_proba(x)), model.predict_proba(x), decimal=3
+        )
+        np.testing.assert_array_almost_equal(sess.run(b.predict(x)), model.predict(x))

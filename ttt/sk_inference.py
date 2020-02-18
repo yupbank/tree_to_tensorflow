@@ -5,7 +5,12 @@ from ttt.tf_utils import tree_to_leaf, leaf_to_value
 
 
 def clf_to_leaf(input_, clf):
-    feature, threshold, left, right = clf.tree_.feature, clf.tree_.threshold, clf.tree_.children_left, clf.tree_.children_right
+    feature, threshold, left, right = (
+        clf.tree_.feature,
+        clf.tree_.threshold,
+        clf.tree_.children_left,
+        clf.tree_.children_right,
+    )
     return tree_to_leaf(input_, feature, threshold, left, right)
 
 
@@ -16,13 +21,11 @@ def clf_to_value(input_, clf):
 
 
 class InferenceBase(object):
-
     def __init__(self, clf):
         self.clf = clf
 
 
 class TreeRegressionInference(InferenceBase):
-
     def predict(self, input_):
         proba = clf_to_value(input_, self.clf)
         if self.clf.n_outputs_ == 1:
@@ -32,7 +35,6 @@ class TreeRegressionInference(InferenceBase):
 
 
 class TreeClassificationInference(InferenceBase):
-
     def predict(self, input_):
         proba = clf_to_value(input_, self.clf)
         pred = tf.argmax(proba, axis=2)
@@ -40,7 +42,13 @@ class TreeClassificationInference(InferenceBase):
         if self.clf.n_outputs_ == 1:
             return tf.gather(self.clf.classes_, pred)[:, 0]
         else:
-            return tf.stack([tf.gather(self.clf.classes_[i], pred[:, i]) for i in range(self.clf.n_outputs_)], axis=1)
+            return tf.stack(
+                [
+                    tf.gather(self.clf.classes_[i], pred[:, i])
+                    for i in range(self.clf.n_outputs_)
+                ],
+                axis=1,
+            )
 
     def predict_prob(self, input_):
         proba = clf_to_value(input_, self.clf)
@@ -48,10 +56,10 @@ class TreeClassificationInference(InferenceBase):
         if self.clf.n_outputs_ == 1:
             proba = tf.squeeze(proba, axis=1)
             normalizer = tf.reduce_sum(proba, axis=1, keepdims=True)
-            proba = proba/normalizer
+            proba = proba / normalizer
         else:
             normalizer = tf.reduce_sum(proba, axis=2, keepdims=True)
-            proba = proba/normalizer
+            proba = proba / normalizer
 
         return proba
 
@@ -61,12 +69,13 @@ class TreeClassificationInference(InferenceBase):
 
 
 class ForestClassifierInference(InferenceBase):
-
     def predict_prob(self, input_):
-        probs = [TreeClassificationInference(est).predict_prob(
-            input_) for est in self.clf.estimators_]
+        probs = [
+            TreeClassificationInference(est).predict_prob(input_)
+            for est in self.clf.estimators_
+        ]
         sum_probs = tf.reduce_sum(probs, axis=0)
-        return sum_probs/self.clf.n_estimators
+        return sum_probs / self.clf.n_estimators
 
     def predict(self, input_):
         prob = self.predict_prob(input_)
@@ -75,12 +84,22 @@ class ForestClassifierInference(InferenceBase):
         if self.clf.n_outputs_ == 1:
             return tf.gather(self.clf.classes_, pred)
         else:
-            return tf.stack([tf.gather(self.clf.classes_[i], pred[:, i]) for i in range(self.clf.n_outputs_)], axis=1)
+            return tf.stack(
+                [
+                    tf.gather(self.clf.classes_[i], pred[:, i])
+                    for i in range(self.clf.n_outputs_)
+                ],
+                axis=1,
+            )
 
 
 class ForestRegressorInference(InferenceBase):
-
     def predict(self, input_):
-        return tf.reduce_mean([TreeRegressionInference(est).predict(
-            input_) for est in self.clf.estimators_], axis=0)
-        #return sum_probs/self.clf.n_estimators
+        return tf.reduce_mean(
+            [
+                TreeRegressionInference(est).predict(input_)
+                for est in self.clf.estimators_
+            ],
+            axis=0,
+        )
+        # return sum_probs/self.clf.n_estimators
