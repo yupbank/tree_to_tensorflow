@@ -7,3 +7,5 @@ pandas
 xgboost
 pytest-cov
 codecov
+black
+pre-commit
