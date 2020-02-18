@@ -5,3 +5,4 @@ numpy>=1.10
 scikit-learn>=0.20.2
 pandas
 xgboost
+codecov
