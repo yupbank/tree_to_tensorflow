@@ -13,5 +13,5 @@ def test_export_decision_tree(tmpdir, dlf, binary_classification_dataset):
     path = os.path.join(tmpdir.dirname, tmpdir.basename)
     with tf.Graph().as_default():
         d = tf.placeholder(tf.float64, [None, x.shape[1]])
-        export_decision_tree(dlf, {'features': d}, path)
+        export_decision_tree(dlf, {"features": d}, path)
         assert len(tmpdir.listdir()) == 1

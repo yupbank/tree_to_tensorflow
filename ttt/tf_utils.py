@@ -15,22 +15,26 @@ def tree_to_leaf(input_, feature, threshold, left, right):
         r = tf.gather(right, prev_node)
         next_node = tf.where(left_or_right, l, r)
         next_is_not_leaf = tf.not_equal(
-            tf.gather(left, next_node), tf.gather(right, next_node))
+            tf.gather(left, next_node), tf.gather(right, next_node)
+        )
 
         return next_node, next_is_not_leaf
 
     def condition(prev_node):
         potential_next_node, potential_next_is_not_leaf = next_node_from_previous(
-            prev_node)
+            prev_node
+        )
         return tf.reduce_any(potential_next_is_not_leaf)
 
     def body(prev_node):
         potential_next_node, potential_next_is_not_leaf = next_node_from_previous(
-            prev_node)
+            prev_node
+        )
         return tf.where(potential_next_is_not_leaf, potential_next_node, prev_node)
 
     final = tf.while_loop(
-        condition, body, [tf.zeros_like(input_[:, 0], dtype=tf.int64)], back_prop=False)
+        condition, body, [tf.zeros_like(input_[:, 0], dtype=tf.int64)], back_prop=False
+    )
     leaf, _ = next_node_from_previous(final)
     return leaf
 
